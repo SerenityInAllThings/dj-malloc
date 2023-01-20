@@ -1,0 +1,31 @@
+{
+  "name": "dj-malloc",
+  "version": "1.0.0",
+  "description": "Discord bot for music",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "start": "node bin/index.js",
+    "start:watch": "node --watch bin/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SerenityInAllThings/dj-malloc.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SerenityInAllThings/dj-malloc/issues"
+  },
+  "homepage": "https://github.com/SerenityInAllThings/dj-malloc#readme",
+  "dependencies": {
+    "discord.js": "^14.7.1",
+    "discordaudio": "^2.8.9"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.4",
+    "@types/node": "^18.11.18"
+  }
+}
