@@ -7,6 +7,11 @@ Discord bot for playing music in discord servers.
 - Create bot image
 - Create app image
 - Feature to allow changing bot prefix
+- Feature to allow creating and updating playlists
+- Implement error handling
+- Enable using alternative youtube domains
+  - Youtube music
+  - Short youtube link
 
 ## References
 

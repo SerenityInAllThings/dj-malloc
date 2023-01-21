@@ -1,13 +1,16 @@
-import { AudioManager, StreamAudioManagerOptions } from "discordaudio";
-import discord, { ChannelType, VoiceBasedChannel } from 'discord.js'
-import { getDiscordToken } from "./environmentVariables";
-import { botPrefix } from "./config";
-import { getPlayResponse } from "./responses";
+import { AudioManager, StreamAudioManagerOptions } from "discordaudio"
+import discord, { ChannelType, VoiceBasedChannel, ClientOptions, VoiceChannel } from 'discord.js'
+import { getDiscordToken } from "./environmentVariables"
+import { setBotPrefix, getBotPrefix} from "./config"
+import { getPlayResponse } from "./responses"
 
 const token = getDiscordToken()
-const client = new discord.Client({
-  intents: ["Guilds", "GuildMessages", "GuildVoiceStates", "MessageContent"]
-})
+const options = {
+  retryLimit: 5,
+  restRequestTimeout: 30 * 1000,
+  intents: ["Guilds", "GuildMessages", "GuildVoiceStates", "MessageContent"],
+} as ClientOptions
+const client = new discord.Client(options)
 
 let currentBotChannel: VoiceBasedChannel | null = null
 const audioManager = new AudioManager()
@@ -20,13 +23,10 @@ client.on('error', console.error)
 
 client.on('messageCreate', async (message) => {
   const { author, channel, content } = message
-  console.debug('received', message.content)
-
-  if (
-    author.bot 
-    || channel.type === ChannelType.DM 
-    || !content.startsWith(botPrefix)
-  ) return
+  
+  if (author.bot || channel.type === ChannelType.DM) return
+  const botPrefix = await getBotPrefix()
+  if (!content.startsWith(botPrefix)) return
 
   const args = content.substring(botPrefix.length + 1).split(' ')
   const [command] = args
@@ -51,13 +51,12 @@ client.on('messageCreate', async (message) => {
         audiotype: 'arbitrary',
         volume: 10
       }
-      //@ts-ignore
-      const queue = await audioManager.play(userChannel, youtubeUrl, audioConfig)
+      const queue = await audioManager.play(userChannel as VoiceChannel, youtubeUrl, audioConfig)
       if (!queue) channel.send(getPlayResponse())
       else channel.send('Na fila, patrão')
 
       currentBotChannel = userChannel
-      break;
+      break
     case 'pula':
     case 'skip':
       if (!currentBotChannel) {
@@ -65,14 +64,13 @@ client.on('messageCreate', async (message) => {
         return
       }
       try {
-        //@ts-ignore
-        await audioManager.skip(currentBotChannel)
+        await audioManager.skip(currentBotChannel as VoiceChannel)
         channel.send('Pulando, patrão')
       } catch (skipMusicError) {
         console.error('skipMusicError', skipMusicError)
         channel.send('Erro ao pular, patrão')
       }
-      break;
+      break
     case 'vaza':
     case 'stop':
     case 'para':
@@ -80,10 +78,18 @@ client.on('messageCreate', async (message) => {
         channel.send('Não tem nada tocando, patrão')
         return
       }
-      //@ts-ignore
-      audioManager.stop(currentBotChannel)
+      audioManager.stop(currentBotChannel as VoiceChannel)
       channel.send('Parando, patrão')
-      break;
+      break
+    case 'mudaprefixo':
+      const newPrefix = args[1]
+      if (!newPrefix) {
+        channel.send('Por favor, informe um novo prefixo')
+        return
+      }
+      await setBotPrefix(newPrefix)
+      channel.send(`Prefixo alterado para '${newPrefix}'`)
+      break
     default:
       channel.send('Comando inválido, patrão')
   }

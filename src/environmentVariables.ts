@@ -4,6 +4,24 @@ const getEnvironmentVariableOrThrow = (name: string): string => {
   else throw new Error(`Missing '${name}' environment variable`)
 }
 
-const getDiscordToken = (): string => getEnvironmentVariableOrThrow('DISCORD_TOKEN')
+const getDiscordToken = () => getEnvironmentVariableOrThrow('DISCORD_TOKEN')
 
-export { getDiscordToken }
+const redisUrl = () => getEnvironmentVariableOrThrow('REDIS_URL')
+
+const redisHost = () => getEnvironmentVariableOrThrow('REDISHOST')
+
+const redisPassword = () => getEnvironmentVariableOrThrow('REDISPASSWORD')
+
+const redisPor = () => getEnvironmentVariableOrThrow('REDISPORT')
+
+const redisUser = () => getEnvironmentVariableOrThrow('REDISUSER')
+
+const getRedisConnectionString = () => {
+  const host = redisHost()
+  const port = redisPor()
+  const password = redisPassword()
+  const user = redisUser()
+  return `redis://${user}:${password}@${host}:${port}`
+}
+
+export { getDiscordToken, getRedisConnectionString }
