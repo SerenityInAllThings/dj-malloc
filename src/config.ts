@@ -7,7 +7,10 @@ let currentBotPrefix: string
 const getBotPrefix = async () => {
   if (!currentBotPrefix) {
     const stored = await getKey(botPrefixKey)
-    if (stored) currentBotPrefix = stored
+    if (stored) {
+      currentBotPrefix = stored
+      console.log(`Using bot prefix '${currentBotPrefix}'`)
+    }
   }
   return currentBotPrefix || defaultBotPrefix
 }
