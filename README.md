@@ -12,6 +12,8 @@ Discord bot for playing music in discord servers.
 - Enable using alternative youtube domains
   - Youtube music
   - Short youtube link
+- Implement way to instantly play a song (ignore current playlist)
+- Allows logs to be streamed back to discord
 
 ## References
 

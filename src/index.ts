@@ -48,17 +48,17 @@ client.on('messageCreate', async (message) => {
 
   const args = content.substring(botPrefix.length + 1).split(' ')
   const [command] = args
+
+  const userChannel = message.member?.voice.channel
+  if (!userChannel) {
+    channel.send('Please join a voice channel first')
+    return
+  }
   
   switch (command.toLowerCase().trim()) {
     case 'toca':
     case 'play':
     case 'p':
-      const userChannel = message.member?.voice.channel
-      if (!userChannel) {
-        channel.send('Please join a voice channel first')
-        return
-      }
-
       const youtubeUrl = args[1]
       if (!youtubeUrl.startsWith('https://www.youtube.com'))  {
         channel.send('Please provide a valid youtube url')
@@ -112,7 +112,7 @@ client.on('messageCreate', async (message) => {
       ]
       for(const worktimeMusic of worktimePlaylist) {
         channel.send(`botei a ${worktimeMusic} pra tocar, patrão`)
-        await playWithRetry(channel as VoiceChannel, worktimeMusic)
+        await playWithRetry(userChannel, worktimeMusic)
       }
       break
     default:
