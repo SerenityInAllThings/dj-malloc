@@ -6,8 +6,7 @@ import { getPlayResponse } from "./responses"
 
 const token = getDiscordToken()
 const options = {
-  retryLimit: 5,
-  restRequestTimeout: 30 * 1000,
+  retryLimit: 3,
   intents: ["Guilds", "GuildMessages", "GuildVoiceStates", "MessageContent"],
 } as ClientOptions
 const client = new discord.Client(options)
@@ -115,6 +114,7 @@ client.on('messageCreate', async (message) => {
         channel.send(`botei a ${worktimeMusic} pra tocar, patrão`)
         await playWithRetry(channel as VoiceChannel, worktimeMusic)
       }
+      break
     default:
       channel.send('Comando inválido, patrão')
   }
