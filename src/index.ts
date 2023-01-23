@@ -90,6 +90,20 @@ client.on('messageCreate', async (message) => {
       await setBotPrefix(newPrefix)
       channel.send(`Prefixo alterado para '${newPrefix}'`)
       break
+    case 'worktime':
+      channel.send('Hora do trabalho, caraleo!')
+      const worktimePlaylist = [
+        'https://www.youtube.com/watch?v=ZgFoMWjng30',
+        'https://www.youtube.com/watch?v=RvaywQkxlrQ',
+        'https://www.youtube.com/watch?v=pQuJJy6dXog',
+        'https://www.youtube.com/watch?v=4r1sKSRxsnQ',
+        'https://www.youtube.com/watch?v=d6Aj2J8bMLI',
+        'https://www.youtube.com/watch?v=znBlH-kyR1k'
+      ]
+      for(const worktimeMusic of worktimePlaylist) {
+        channel.send(`botei a ${worktimeMusic} pra tocar, patrão`)
+        await audioManager.play(channel as VoiceChannel, worktimeMusic, { quality: 'high', audiotype: 'arbitrary', volume: 10 })
+      }
     default:
       channel.send('Comando inválido, patrão')
   }
