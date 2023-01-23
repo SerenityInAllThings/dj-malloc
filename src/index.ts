@@ -15,6 +15,25 @@ const client = new discord.Client(options)
 let currentBotChannel: VoiceBasedChannel | null = null
 const audioManager = new AudioManager()
 
+//** Will play a song from youtube and retry it if necessary. Will return the retry count */
+const playWithRetry = async (channel: VoiceBasedChannel, url: string, retryCount: number = 0): Promise<number> => {
+  const maxRetries = 5
+  const audioConfig: StreamAudioManagerOptions = { 
+    quality: "high",
+    audiotype: 'arbitrary',
+    volume: 10
+  }
+  try {
+    await audioManager.play(channel as VoiceChannel, url, audioConfig)
+    currentBotChannel = channel
+    return retryCount
+  } catch (err) {
+    console.error(`Error playing ${url}`, err)
+    if (retryCount < maxRetries) return playWithRetry(channel as VoiceChannel, url, retryCount + 1)
+    throw err
+  }
+}
+
 client.once('ready', () => {
   console.log(`Bot online as '${client.user?.username}' !!`)
 })
@@ -46,15 +65,7 @@ client.on('messageCreate', async (message) => {
         channel.send('Please provide a valid youtube url')
         return
       }
-      const audioConfig: StreamAudioManagerOptions = { 
-        quality: "high",
-        audiotype: 'arbitrary',
-        volume: 10
-      }
-      const queue = await audioManager.play(userChannel as VoiceChannel, youtubeUrl, audioConfig)
-      if (!queue) channel.send(getPlayResponse())
-      else channel.send('Na fila, patrão')
-
+      await playWithRetry(userChannel, youtubeUrl)
       currentBotChannel = userChannel
       break
     case 'pula':
@@ -102,7 +113,7 @@ client.on('messageCreate', async (message) => {
       ]
       for(const worktimeMusic of worktimePlaylist) {
         channel.send(`botei a ${worktimeMusic} pra tocar, patrão`)
-        await audioManager.play(channel as VoiceChannel, worktimeMusic, { quality: 'high', audiotype: 'arbitrary', volume: 10 })
+        await playWithRetry(channel as VoiceChannel, worktimeMusic)
       }
     default:
       channel.send('Comando inválido, patrão')
