@@ -3,6 +3,7 @@ import discord, { ChannelType, VoiceBasedChannel, ClientOptions, VoiceChannel } 
 import { getDiscordToken } from "./environmentVariables"
 import { setBotPrefix, getBotPrefix} from "./config"
 import { getPlayResponse } from "./responses"
+import { isYoutubeUrlValid } from "./youtube"
 
 const token = getDiscordToken()
 const options = {
@@ -44,7 +45,7 @@ client.on('messageCreate', async (message) => {
   
   if (author.bot || channel.type === ChannelType.DM) return
   const botPrefix = await getBotPrefix()
-  if (!content.startsWith(botPrefix)) return
+  if (!content.toLowerCase().startsWith(botPrefix.toLowerCase())) return
 
   const args = content.substring(botPrefix.length + 1).split(' ')
   const [command] = args
@@ -60,7 +61,7 @@ client.on('messageCreate', async (message) => {
     case 'play':
     case 'p':
       const youtubeUrl = args[1]
-      if (!youtubeUrl.startsWith('https://www.youtube.com'))  {
+      if (!isYoutubeUrlValid(youtubeUrl))  {
         channel.send('Please provide a valid youtube url')
         return
       }
