@@ -1,9 +1,10 @@
 import { AudioManager, StreamAudioManagerOptions } from "discordaudio"
 import discord, { ChannelType, VoiceBasedChannel, ClientOptions, VoiceChannel } from 'discord.js'
 import { getDiscordToken } from "./environmentVariables"
-import { setBotPrefix, getBotPrefix} from "./config"
+import { setBotPrefix, getBotPrefix, setLogChannel} from "./config"
 import { getPlayResponse } from "./responses"
 import { isYoutubeUrlValid } from "./youtube"
+import { shuffleArray } from './shuffleArray'
 
 const token = getDiscordToken()
 const options = {
@@ -109,12 +110,18 @@ client.on('messageCreate', async (message) => {
         'https://www.youtube.com/watch?v=pQuJJy6dXog',
         'https://www.youtube.com/watch?v=4r1sKSRxsnQ',
         'https://www.youtube.com/watch?v=d6Aj2J8bMLI',
-        'https://www.youtube.com/watch?v=znBlH-kyR1k'
+        'https://www.youtube.com/watch?v=znBlH-kyR1k',
+        'https://www.youtube.com/watch?v=ycMg5Q6AtWI'
       ]
-      for(const worktimeMusic of worktimePlaylist) {
+      for(const worktimeMusic of shuffleArray(worktimePlaylist)) {
         channel.send(`botei a ${worktimeMusic} pra tocar, patrão`)
         await playWithRetry(userChannel, worktimeMusic)
       }
+      break
+    case 'logchannel':
+      const logChannel = args[1]
+      await setLogChannel(logChannel)
+      channel.send(`Log channel set to ${logChannel}`)
       break
     default:
       channel.send('Comando inválido, patrão')
