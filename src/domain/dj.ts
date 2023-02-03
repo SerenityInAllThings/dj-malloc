@@ -18,9 +18,9 @@ const getBotMessagesChannel = async () => {
     const botChannelId = await getLogChannel()
     let channel = await client.channels.fetch(botChannelId)
     if (!channel)
-      throw new Error('Bot log channel not found')
+      throw new Error(`Bot log channel '${botChannelId}' not found`)
     if (!channel.isTextBased())
-      throw new Error('Bot log channel is not voice based')
+      throw new Error(`Bot log channel '${botChannelId}' is not voice based`)
     botMessagesChannel = channel
   }
   return botMessagesChannel
@@ -38,9 +38,9 @@ const getBotVoiceChannel = async () => {
     const botChannelId = await getVoiceChannel()
     let channel = await client.channels.fetch(botChannelId)
     if (!channel)
-      throw new Error('Bot voice channel not found')
+      throw new Error(`Bot voice channel '${botChannelId}' not found`)
     if (!channel.isVoiceBased())
-      throw new Error('Bot voice channel is not text based')
+      throw new Error(`Bot voice channel '${botChannelId}' is not text based`)
     voiceChannel = channel
   }
 
