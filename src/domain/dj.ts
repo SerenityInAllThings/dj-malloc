@@ -27,7 +27,7 @@ const getBotMessagesChannel = async () => {
   return botMessagesChannel
 }
 
-export const log = async (text: string) => {
+export const sendToDiscord = async (text: string) => {
   console.log(text)
   const logChannel = await getBotMessagesChannel()
   logChannel.send(text)
@@ -49,14 +49,13 @@ const getBotVoiceChannel = async () => {
 }
 
 client.once('ready', () => {
-  log(`${new Date()}: Bot online as '${client.user?.username}'!!`)
-  console.log(`Bot online as '${client.user?.username}'!!`)
+  sendToDiscord(`${new Date().getTime()}: Bot online as '${client.user?.username}'!!`)
 })
 
 // TODO: send logs to discord channel
 client.on('error', (error) => {
   console.log(error)
-  log(error.toString())
+  sendToDiscord(error.toString())
 })
 
 client.on('debug', (info) => {
@@ -87,7 +86,6 @@ client.on('messageCreate', async (message) => {
     case 'skip':
       // TODO: split this logic to another function
       try {
-        
         await audioManager.skip(channel as VoiceChannel)
       } catch (skipMusicError) {
         console.error('skipMusicError', skipMusicError)
@@ -156,14 +154,14 @@ export const playWithRetry = async (youtubeUrl: string, retryCount: number = 0):
   const result = await Promise.race([playRequest, timeout])
 
   if ("timeout" in result || result.error) {
-    await log(`Error playing ${youtubeUrl}. Retry count: ${retryCount}.`)
+    await sendToDiscord(`Error playing ${youtubeUrl}. Retry count: ${retryCount}.`)
     if (retryCount <= maxPlayRetries) {
-      await log(`Retrying until ${retryCount}/${maxPlayRetries}.`)
+      await sendToDiscord(`Retrying until ${retryCount}/${maxPlayRetries}.`)
       return await playWithRetry(youtubeUrl, retryCount + 1)
     } else {
       // TODO: add feature to skip this song
       const message = `Could not play ${youtubeUrl} after ${retryCount} retries.`
-      await log(message)
+      await sendToDiscord(message)
       return { error: true, message }
     }
   }
@@ -185,7 +183,7 @@ export const play = async (youtubeUrl: string): Promise<PlayResult> => {
     await audioManager.play(channel as VoiceChannel, youtubeUrl, audioConfig)
     return { error: false, message: 'Playing' }
   } catch (err) {
-    await log(`Error playing music: ${JSON.stringify(err)}`)
+    await sendToDiscord(`Error playing music: ${JSON.stringify(err)}`)
     return { error: true, message: 'unexpected error playing song' }
   }
 }
