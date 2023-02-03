@@ -57,6 +57,10 @@ client.on('error', (error) => {
   log(error.toString())
 })
 
+client.on('debug', (info) => {
+  console.log('debugInfo', info)
+})
+
 interface PlayResult {
   error: boolean
   message: string

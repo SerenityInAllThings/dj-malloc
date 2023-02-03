@@ -37,7 +37,7 @@ const playWithRetry = async (channel: VoiceBasedChannel, url: string, retryCount
 }
 
 client.once('ready', () => {
-  console.log(`Bot online as '${client.user?.username}' !!`)
+  console.log(`Bot discord client online as '${client.user?.username}' !!`)
 })
 
 client.on('error', console.error)
