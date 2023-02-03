@@ -2,9 +2,10 @@ import { AudioManager, StreamAudioManagerOptions } from "discordaudio"
 import discord, { ChannelType, VoiceBasedChannel, ClientOptions, VoiceChannel } from 'discord.js'
 import { getDiscordToken } from "./environmentVariables"
 import { setBotPrefix, getBotPrefix, setLogChannel} from "./config"
-import { getPlayResponse } from "./responses"
 import { isYoutubeUrlValid } from "./youtube"
 import { shuffleArray } from './shuffleArray'
+import { start as startWebserver } from "./server"
+import { start as startBot } from './domain/dj'
 
 const token = getDiscordToken()
 const options = {
@@ -129,3 +130,6 @@ client.on('messageCreate', async (message) => {
 })
 
 client.login(token)
+
+startWebserver()
+startBot()

@@ -5,9 +5,6 @@ const defaultBotPrefix = 'dj'
 const botPrefixKey = 'botPrefix'
 let currentBotPrefix: string
 
-const botLogChannelKey = 'botLogChannel'
-let currentBotLogChannel: string
-
 const getBotPrefix = async () => {
   if (!currentBotPrefix) {
     const stored = await getKey(botPrefixKey)
@@ -24,20 +21,43 @@ const setBotPrefix = async (newPrefix: string) => {
   await setKey(botPrefixKey, newPrefix)
 }
 
+const botLogChannelKey = 'botLogChannel'
+let currentBotLogChannel: string
+
 const getLogChannel = async () => {
   if (!currentBotLogChannel) {
     const stored = await getKey(botLogChannelKey)
     if (stored) {
       currentBotLogChannel = stored
-      console.log(`Using bot prefix '${currentBotPrefix}'`)
+      console.log(`Using bot log channel '${currentBotLogChannel}'`)
     }
   }
   return currentBotLogChannel
 }
 
-const setLogChannel = async (newLogChannel: string) => {
-  currentBotLogChannel = newLogChannel
-  await setKey(botLogChannelKey, newLogChannel)
+const setLogChannel = async (newLogChannelId: string) => {
+  currentBotLogChannel = newLogChannelId
+  await setKey(botLogChannelKey, newLogChannelId)
 }
 
-export { getBotPrefix, setBotPrefix, getLogChannel, setLogChannel }
+const botVoiceChannelKey = 'botVoiceChannel'
+let currentBotVoiceChannel: string
+
+const getVoiceChannel = async () => {
+  if (!currentBotVoiceChannel) {
+    const stored = await getKey(botVoiceChannelKey)
+    if (stored) {
+      currentBotVoiceChannel = stored
+      console.log(`Using bot voice channel '${currentBotVoiceChannel}'`)
+    }
+  }
+
+  return currentBotVoiceChannel
+}
+
+const setVoiceChannel = async (newVoiceChannelId: string) => {
+  currentBotVoiceChannel = newVoiceChannelId
+  await setKey(botVoiceChannelKey, newVoiceChannelId)
+}
+
+export { getBotPrefix, setBotPrefix, getLogChannel, setLogChannel, getVoiceChannel, setVoiceChannel }
