@@ -49,6 +49,7 @@ const getBotVoiceChannel = async () => {
 }
 
 client.once('ready', () => {
+  log(`${new Date()}: Bot online as '${client.user?.username}'!!`)
   console.log(`Bot online as '${client.user?.username}'!!`)
 })
 
