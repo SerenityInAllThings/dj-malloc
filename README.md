@@ -4,16 +4,18 @@ Discord bot for playing music in discord servers.
 
 ## To Dos:
 
-- Create bot image
 - Create app image
-- Feature to allow changing bot prefix
 - Feature to allow creating and updating playlists
 - Implement error handling
-- Enable using alternative youtube domains
   - Youtube music
   - Short youtube link
 - Implement way to instantly play a song (ignore current playlist)
-- Allows logs to be streamed back to discord
+- Allow playing age restricted videos
+  - https://github.com/Luuk-Dev/DiscordAudio/issues/3
+- ~~Create bot image~~
+- ~~Feature to allow changing bot prefix~~
+- ~~Enable using alternative youtube domains~~
+- ~~Allows logs to be streamed back to discord~~
 
 ## References
 

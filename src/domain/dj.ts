@@ -188,6 +188,13 @@ export const play = async (youtubeUrl: string): Promise<PlayResult> => {
   }
 }
 
+process.on('unhandledRejection', (error) => {
+  let message = `unhandledRejection: ${error}`
+  if (error instanceof Error)
+    message += '\n' + error.toString()
+  sendToDiscord(message)
+})
+
 export const start = async () => {
   await client.login(token)
 }
