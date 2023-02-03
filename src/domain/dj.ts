@@ -80,7 +80,7 @@ client.on('messageCreate', async (message) => {
     case 'play':
     case 'p':
       const youtubeUrl = firstArgument
-      await play(youtubeUrl)
+      await playWithRetry(youtubeUrl)
       break
     case 'pula':
     case 'skip':
@@ -121,7 +121,7 @@ client.on('messageCreate', async (message) => {
       ]
       for(const worktimeMusic of shuffleArray(worktimePlaylist)) {
         channel.send(`botei a ${worktimeMusic} pra tocar, patrão`)
-        await play(worktimeMusic)
+        await playWithRetry(worktimeMusic)
       }
       break
     case 'logchannel':
@@ -139,19 +139,54 @@ interface PlayResult {
   message: string
 }
 
-export const play = async (youtubeUrl: string): Promise<PlayResult> => {
-  if (!isYoutubeUrlValid(youtubeUrl))
-    return { error: true, message: 'Please provide a valid youtube url' }
-  const audioConfig: StreamAudioManagerOptions = { 
-    quality: "high",
-    audiotype: 'arbitrary',
-    volume: 10
+const asyncTimeout = (ms: number) => new Promise<{timeout:boolean}>(resolve => setTimeout(() => resolve({ timeout: true }), ms))
+
+const maxPlayRetries = 3
+const timeoutPerRetry: { [key: number]: number } = {
+  0: 1000,
+  1: 2000,
+  2: 4000,
+  4: 8000,
+}
+export const playWithRetry = async (youtubeUrl: string, retryCount: number = 0): Promise<PlayResult> => {
+  const timeoutMs = timeoutPerRetry[retryCount] || 1000
+  const timeout = asyncTimeout(timeoutMs)
+  const playRequest = play(youtubeUrl)
+  const result = await Promise.race([playRequest, timeout])
+
+  if ("timeout" in result || result.error) {
+    await log(`Error playing ${youtubeUrl}. Retry count: ${retryCount}.`)
+    if (retryCount <= maxPlayRetries) {
+      await log(`Retrying until ${retryCount}/${maxPlayRetries}.`)
+      return await playWithRetry(youtubeUrl, retryCount + 1)
+    } else {
+      // TODO: add feature to skip this song
+      const message = `Could not play ${youtubeUrl} after ${retryCount} retries.`
+      await log(message)
+      return { error: true, message }
+    }
   }
-  const channel = await getBotVoiceChannel()
-  // TODO: investigate if this is the correct way to play audio.
-  // Maybe the cast is not needed or a sign that the types are wrong
-  await audioManager.play(channel as VoiceChannel, youtubeUrl, audioConfig)
   return { error: false, message: 'Playing' }
+}
+
+export const play = async (youtubeUrl: string): Promise<PlayResult> => {
+  try {
+    if (!isYoutubeUrlValid(youtubeUrl))
+      return { error: true, message: 'Please provide a valid youtube url' }
+    const audioConfig: StreamAudioManagerOptions = { 
+      quality: "high",
+      audiotype: 'arbitrary',
+      volume: 10
+    }
+    const channel = await getBotVoiceChannel()
+    // TODO: investigate if this is the correct way to play audio.
+    // Maybe the cast is not needed or a sign that the types are wrong
+    await audioManager.play(channel as VoiceChannel, youtubeUrl, audioConfig)
+    return { error: false, message: 'Playing' }
+  } catch (err) {
+    await log(`Error playing music: ${JSON.stringify(err)}`)
+    return { error: true, message: 'unexpected error playing song' }
+  }
 }
 
 export const start = async () => {
