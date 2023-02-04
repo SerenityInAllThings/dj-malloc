@@ -23,7 +23,7 @@
   "dependencies": {
     "@redis/client": "^1.4.2",
     "discord.js": "^14.7.1",
-    "discordaudio": "^2.8.9",
+    "discordaudio": "^2.9.4",
     "express": "^4.18.2",
     "redis": "^4.5.1"
   },

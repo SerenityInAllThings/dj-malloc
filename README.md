@@ -2,6 +2,9 @@
 
 Discord bot for playing music in discord servers.
 
+It is important to set the environment variable `YT_COOKIE` to allow playing age restricted videos.
+This should be set with the cookie of a logged in user.
+
 ## To Dos:
 
 - Create app image
@@ -10,8 +13,12 @@ Discord bot for playing music in discord servers.
   - Youtube music
   - Short youtube link
 - Implement way to instantly play a song (ignore current playlist)
-- Allow playing age restricted videos
+- Add precommit hook to increase package.json version
+  - this would allow the bot to inform it's current version
+  - Maybe informing the version on startup would be helpful
+- ~~Allow playing age restricted videos~~
   - https://github.com/Luuk-Dev/DiscordAudio/issues/3
+  - Cookies can now be set using environment variable YT_COOKIE
 - ~~Create bot image~~
 - ~~Feature to allow changing bot prefix~~
 - ~~Enable using alternative youtube domains~~
