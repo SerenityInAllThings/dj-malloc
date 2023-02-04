@@ -6,8 +6,6 @@ const getEnvironmentVariableOrThrow = (name: string): string => {
 
 const getDiscordToken = () => getEnvironmentVariableOrThrow('DISCORD_TOKEN')
 
-const redisUrl = () => getEnvironmentVariableOrThrow('REDIS_URL')
-
 const redisHost = () => getEnvironmentVariableOrThrow('REDISHOST')
 
 const redisPassword = () => getEnvironmentVariableOrThrow('REDISPASSWORD')
