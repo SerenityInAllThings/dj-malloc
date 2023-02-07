@@ -11,12 +11,12 @@ interface PlayResult {
   message: string
 }
 
-const maxPlayRetries = 3
+const maxPlayRetries = 2
 const timeoutPerRetry: { [key: number]: number } = {
-  0: 1000,
-  1: 2000,
-  2: 4000,
-  4: 8000,
+  0: 3 * 1000,
+  1: 6 * 1000,
+  2: 12* 1000,
+  4: 30 * 1000,
 }
 
 export const playWithRetry = async (youtubeUrl: string, retryCount: number = 0): Promise<PlayResult> => {
@@ -26,12 +26,12 @@ export const playWithRetry = async (youtubeUrl: string, retryCount: number = 0):
   const result = await Promise.race([playRequest, timeout])
 
   if ("timeout" in result || result.error) {
-    await sendToDiscord(`Error playing ${youtubeUrl}. Time already tried: ${retryCount + 1}.`)
-    if (retryCount <= maxPlayRetries) {
-      await sendToDiscord(`Will retry another ${maxPlayRetries-(retryCount+1)} times`)
+    await sendToDiscord(`Error playing '${youtubeUrl}'. Times already tried: ${retryCount + 1}.`)
+    if (retryCount < maxPlayRetries) {
+      await sendToDiscord(`Will retry another ${maxPlayRetries-(retryCount)} times`)
       return await playWithRetry(youtubeUrl, retryCount + 1)
     } else {
-      const message = `Could not play ${youtubeUrl} after ${retryCount} retries.`
+      const message = `Could not play '${youtubeUrl}' after ${retryCount} retries.`
       await sendToDiscord(message)
       return { error: true, message }
     }
@@ -51,10 +51,12 @@ export const play = async (youtubeUrl: string): Promise<PlayResult> => {
     }
     // TODO: investigate if the cast is really necessary
     const channel = await getBotVoiceChannel() as VoiceChannel
+    console.log(1)
     await audioManager.play(channel, youtubeUrl, audioConfig)
+    console.log(2)
     return { error: false, message: 'Playing' }
   } catch (err) {
-    await sendToDiscord(`Error playing ${youtubeUrl}: ${JSON.stringify(err)}`)
+    await sendToDiscord(`Error playing '${youtubeUrl}': ${JSON.stringify(err)}`)
     return { error: true, message: 'unexpected error playing song' }
   }
 }

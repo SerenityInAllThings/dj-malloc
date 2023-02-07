@@ -30,7 +30,8 @@ export const configureEvents = () => {
     const botPrefix = await getBotPrefix()
     if (!content.toLowerCase().startsWith(botPrefix.toLowerCase())) return
 
-    const args = content.substring(botPrefix.length + 1).split(' ')
+    const args = content.substring(botPrefix.length + 1).split(' ').filter(s => s)
+    console.log('args', args)
     const [command, firstArgument] = args
 
     // TODO: check if this cast is really necessary
@@ -40,7 +41,7 @@ export const configureEvents = () => {
       case 'toca':
       case 'play':
       case 'p':
-        const youtubeUrl = firstArgument
+        const youtubeUrl = firstArgument.trim()
         await playWithRetry(youtubeUrl)
         break
       case 'pula':
