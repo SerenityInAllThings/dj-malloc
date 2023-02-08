@@ -1,5 +1,5 @@
 import { ChannelType, VoiceChannel } from 'discord.js'
-import { getBotPrefix, setBotPrefix, setLogChannel } from '../../config'
+import { getBotPrefix, setBotPrefix, setLogChannel, setVoiceChannel } from '../../config'
 import { shuffleArray } from '../../shuffleArray'
 import { getBotVoiceChannel } from './channels'
 import { getAudioManager, getDiscordClient } from './discordClient'
@@ -89,6 +89,11 @@ export const configureEvents = () => {
         const logChannel = firstArgument
         await setLogChannel(logChannel)
         channel.send(`Log channel set to ${logChannel}`)
+        break
+      case 'voicechannel':
+        const voicechannel = firstArgument
+        await setVoiceChannel(voicechannel)
+        channel.send(`Voice channel set to ${voicechannel}`)
         break
       default:
         channel.send('Comando inválido, patrão')
