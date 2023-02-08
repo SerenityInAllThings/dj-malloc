@@ -3,11 +3,11 @@ import { getLogChannel, getVoiceChannel } from '../../config'
 import { getDiscordClient } from './discordClient'
 
 let botMessagesChannel: TextBasedChannel
-let botChannelId: string
+let logChannelId: string
 export const getBotMessagesChannel = async () => {
-  if (!botMessagesChannel || botMessagesChannel.id !== botChannelId) {
+  const botChannelId = await getLogChannel()
+  if (!botMessagesChannel || botChannelId !== logChannelId) {
     console.log('getting log channel')
-    const botChannelId = await getLogChannel()
     const client = getDiscordClient()
     let channel = await client.channels.fetch(botChannelId)
     if (!channel)
@@ -15,6 +15,7 @@ export const getBotMessagesChannel = async () => {
     if (!channel.isTextBased())
       throw new Error(`Bot log channel '${botChannelId}' is not voice based`)
     botMessagesChannel = channel
+    logChannelId = botChannelId
   }
   return botMessagesChannel
 }
@@ -22,9 +23,9 @@ export const getBotMessagesChannel = async () => {
 let voiceChannel: VoiceBasedChannel
 let voiceChannelId: string
 export const getBotVoiceChannel = async () => {
-  if (!voiceChannel || voiceChannel.id !== voiceChannelId) {
+  const botChannelId = await getVoiceChannel()
+  if (!voiceChannel || botChannelId !== voiceChannelId) {
     console.log('getting voice channel')
-    const botChannelId = await getVoiceChannel()
     const client = getDiscordClient()
     let channel = await client.channels.fetch(botChannelId)
     if (!channel)
@@ -32,6 +33,7 @@ export const getBotVoiceChannel = async () => {
     if (!channel.isVoiceBased())
       throw new Error(`Bot voice channel '${botChannelId}' is not text based`)
     voiceChannel = channel
+    voiceChannelId = botChannelId
   }
 
   return voiceChannel
