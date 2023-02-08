@@ -3,8 +3,10 @@ import { getLogChannel, getVoiceChannel } from '../../config'
 import { getDiscordClient } from './discordClient'
 
 let botMessagesChannel: TextBasedChannel
+let botChannelId: string
 export const getBotMessagesChannel = async () => {
-  if (!botMessagesChannel) {
+  if (!botMessagesChannel || botMessagesChannel.id !== botChannelId) {
+    console.log('getting log channel')
     const botChannelId = await getLogChannel()
     const client = getDiscordClient()
     let channel = await client.channels.fetch(botChannelId)
@@ -18,8 +20,10 @@ export const getBotMessagesChannel = async () => {
 }
 
 let voiceChannel: VoiceBasedChannel
+let voiceChannelId: string
 export const getBotVoiceChannel = async () => {
-  if (!voiceChannel) {
+  if (!voiceChannel || voiceChannel.id !== voiceChannelId) {
+    console.log('getting voice channel')
     const botChannelId = await getVoiceChannel()
     const client = getDiscordClient()
     let channel = await client.channels.fetch(botChannelId)
