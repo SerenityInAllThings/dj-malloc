@@ -4,10 +4,11 @@ import { asyncTimeout } from "../../asyncTimeout"
 import { isYoutubeUrlValid } from "../../youtube"
 import { getBotVoiceChannel } from "./channels"
 import { getAudioManager } from "./discordClient"
-import { sendToDiscord } from "./writing"
+import { debug } from "./writing"
 
 interface PlayResult {
   error: boolean
+  retries: number
   message: string
 }
 
@@ -26,24 +27,24 @@ export const playWithRetry = async (youtubeUrl: string, retryCount: number = 0):
   const result = await Promise.race([playRequest, timeout])
 
   if ("timeout" in result || result.error) {
-    await sendToDiscord(`Error playing '${youtubeUrl}'. Times already tried: ${retryCount + 1}.`)
+    await debug(`Error playing '${youtubeUrl}'. Times already tried: ${retryCount + 1}.`)
     if (retryCount < maxPlayRetries) {
-      await sendToDiscord(`Will retry another ${maxPlayRetries-(retryCount)} times`)
+      await debug(`Will retry another ${maxPlayRetries-(retryCount)} times`)
       return await playWithRetry(youtubeUrl, retryCount + 1)
     } else {
       const message = `Could not play '${youtubeUrl}' after ${retryCount} retries.`
-      await sendToDiscord(message)
-      return { error: true, message }
+      await debug(message)
+      return { error: true, message, retries: retryCount }
     }
   }
-  return { error: false, message: 'Playing' }
+  return { error: false, message: 'Playing', retries: retryCount }
 }
 
 export const play = async (youtubeUrl: string): Promise<PlayResult> => {
   try {
     const audioManager = getAudioManager()
     if (!isYoutubeUrlValid(youtubeUrl))
-      return { error: true, message: 'Please provide a valid youtube url' }
+      return { error: true, message: 'Please provide a valid youtube url', retries: 0 }
     const audioConfig: StreamAudioManagerOptions = { 
       quality: "high",
       audiotype: 'arbitrary',
@@ -51,12 +52,10 @@ export const play = async (youtubeUrl: string): Promise<PlayResult> => {
     }
     // TODO: investigate if the cast is really necessary
     const channel = await getBotVoiceChannel() as VoiceChannel
-    console.log(1)
     await audioManager.play(channel, youtubeUrl, audioConfig)
-    console.log(2)
-    return { error: false, message: 'Playing' }
+    return { error: false, message: 'Playing', retries: 0 }
   } catch (err) {
-    await sendToDiscord(`Error playing '${youtubeUrl}': ${JSON.stringify(err)}`)
-    return { error: true, message: 'unexpected error playing song' }
+    await debug(`Error playing '${youtubeUrl}': ${JSON.stringify(err)}`)
+    return { error: true, message: 'unexpected error playing song', retries: 0 }
   }
 }

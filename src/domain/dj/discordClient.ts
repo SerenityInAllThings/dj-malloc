@@ -6,7 +6,7 @@ import { configureEvents } from './listeners'
 const token = getDiscordToken()
 const options = {
   retryLimit: 3,
-  intents: ["Guilds", "GuildMessages", "GuildVoiceStates", "MessageContent"],
+  intents: ["Guilds", "GuildMessages", "GuildVoiceStates", "MessageContent", "GuildMessageReactions"],
 } as ClientOptions
 
 const client = new discord.Client(options)

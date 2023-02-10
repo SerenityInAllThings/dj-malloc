@@ -16,6 +16,8 @@ This should be set with the cookie of a logged in user.
 - Add precommit hook to increase package.json version
   - this would allow the bot to inform it's current version
   - Maybe informing the version on startup would be helpful
+- Improve bot response to codes
+- provide REST API for changing music
 - ~~Allow playing age restricted videos~~
   - https://github.com/Luuk-Dev/DiscordAudio/issues/3
   - Cookies can now be set using environment variable YT_COOKIE

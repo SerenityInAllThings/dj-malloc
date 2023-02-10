@@ -1,10 +1,19 @@
 import { ChannelType, VoiceChannel } from 'discord.js'
 import { getBotPrefix, setBotPrefix, setLogChannel, setVoiceChannel } from '../../config'
 import { shuffleArray } from '../../shuffleArray'
+import { isYoutubeUrlValid } from '../../youtube'
 import { getBotVoiceChannel } from './channels'
 import { getAudioManager, getDiscordClient } from './discordClient'
 import { playWithRetry } from './player'
-import { sendToDiscord } from './writing'
+import { debug, sendToDiscord } from './writing'
+
+const getRetryEmoji = (retry: number) => {
+  if (retry === 0) return '🐸'
+  else if (retry === 1) return '🪳'
+  else if (retry === 2) return '🪰'
+  else if (retry === 3) return '🪲'
+  else return '🕸️'
+}
 
 export const configureEvents = () => {
   const client = getDiscordClient(true)
@@ -41,9 +50,19 @@ export const configureEvents = () => {
       case 'toca':
       case 'play':
       case 'p':
-        const youtubeUrl = firstArgument.trim()
-        await playWithRetry(youtubeUrl)
-        break
+        try {
+          const youtubeUrl = firstArgument.trim()
+          const playResult = await playWithRetry(youtubeUrl)
+          
+          message.react(getRetryEmoji(playResult.retries))
+          if (playResult.error) message.react('❌')
+          else message.react('▶️')
+
+          break
+        } catch (err) {
+          message.react('🦖')
+          debug(`Error playing ${isYoutubeUrlValid}: ${err}`)
+        }
       case 'pula':
       case 'skip':
         // TODO: split this logic to another function
@@ -71,6 +90,7 @@ export const configureEvents = () => {
         break
       case 'worktime':
         channel.send('Hora do trabalho, caraleo!')
+        message.react('👨‍💼')
         const worktimePlaylist = [
           'https://www.youtube.com/watch?v=ZgFoMWjng30',
           'https://www.youtube.com/watch?v=RvaywQkxlrQ',
@@ -80,10 +100,12 @@ export const configureEvents = () => {
           'https://www.youtube.com/watch?v=znBlH-kyR1k',
           'https://www.youtube.com/watch?v=ycMg5Q6AtWI'
         ]
-        for(const worktimeMusic of shuffleArray(worktimePlaylist)) {
-          channel.send(`botei a ${worktimeMusic} pra tocar, patrão`)
+        const playlist = shuffleArray(worktimePlaylist)
+        for(const worktimeMusic of playlist)
           await playWithRetry(worktimeMusic)
-        }
+        const names = playlist.map((music, index) => `${index}) ${music}\n`)
+        channel.send(`Coloquei essas, patrão: \n${names}`)
+
         break
       case 'logchannel':
         const logChannel = firstArgument

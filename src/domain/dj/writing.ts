@@ -5,3 +5,7 @@ export const sendToDiscord = async (text: string) => {
   const logChannel = await getBotMessagesChannel()
   logChannel.send(text)
 }
+
+export const debug = async (text: string) => {
+  console.debug(text)
+}
