@@ -64,6 +64,6 @@ export const getQueue = async () => {
   const audioManager = getAudioManager()
   // TODO: investigate if the cast is really necessary
   const channel = await getBotVoiceChannel() as VoiceChannel
-  const songs = audioManager.queue(channel).map(song => ({ ...song, order: 0 }))
+  const songs = audioManager.queue(channel).map((song, order) => ({ ...song, order }))
   return songs
 }
