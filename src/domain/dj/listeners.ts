@@ -77,7 +77,7 @@ export const configureEvents = () => {
       case 'stop':
       case 'para':
         audioManager.stop(botChannel)
-        channel.send('Parando, patrão')
+        message.react('⏹️')
         break
       case 'mudaprefixo':
         const newPrefix = args[1]
@@ -86,6 +86,7 @@ export const configureEvents = () => {
           return
         }
         await setBotPrefix(newPrefix)
+        message.react('🆗')
         channel.send(`Prefixo alterado para '${newPrefix}'`)
         break
       case 'worktime':
@@ -103,21 +104,24 @@ export const configureEvents = () => {
         const playlist = shuffleArray(worktimePlaylist)
         for(const worktimeMusic of playlist)
           await playWithRetry(worktimeMusic)
-        const names = playlist.map((music, index) => `${index}) ${music}\n`)
+        const names = playlist.map((music, index) => `${index + 1}) ${music}`).join('\n')
         channel.send(`Coloquei essas, patrão: \n${names}`)
 
         break
       case 'logchannel':
         const logChannel = firstArgument
         await setLogChannel(logChannel)
+        message.react('🆗')
         channel.send(`Log channel set to ${logChannel}`)
         break
       case 'voicechannel':
         const voicechannel = firstArgument
         await setVoiceChannel(voicechannel)
+        message.react('🆗')
         channel.send(`Voice channel set to ${voicechannel}`)
         break
       default:
+        message.react('❓')
         channel.send('Comando inválido, patrão')
     }
   })
