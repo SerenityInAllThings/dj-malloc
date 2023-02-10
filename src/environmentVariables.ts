@@ -4,22 +4,32 @@ const getEnvironmentVariableOrThrow = (name: string): string => {
   else throw new Error(`Missing '${name}' environment variable`)
 }
 
+const getNumericEnvironmentVariableOrThrow = (name: string): number => {
+  const value = getEnvironmentVariableOrThrow(name)
+  const parsed = parseInt(value)
+  if (isNaN(parsed))
+    throw new Error(`Environment variable '${name}' is not numeric`)
+  return parsed
+}
+
 const getDiscordToken = () => getEnvironmentVariableOrThrow('DISCORD_TOKEN')
 
-const redisHost = () => getEnvironmentVariableOrThrow('REDISHOST')
+const getRedisHost = () => getEnvironmentVariableOrThrow('REDISHOST')
 
-const redisPassword = () => getEnvironmentVariableOrThrow('REDISPASSWORD')
+const getRedisPassword = () => getEnvironmentVariableOrThrow('REDISPASSWORD')
 
-const redisPor = () => getEnvironmentVariableOrThrow('REDISPORT')
+const getRedisPort = () => getEnvironmentVariableOrThrow('REDISPORT')
 
-const redisUser = () => getEnvironmentVariableOrThrow('REDISUSER')
+const getRedisUser = () => getEnvironmentVariableOrThrow('REDISUSER')
+
+const getPort = () => getNumericEnvironmentVariableOrThrow('PORT')
 
 const getRedisConnectionString = () => {
-  const host = redisHost()
-  const port = redisPor()
-  const password = redisPassword()
-  const user = redisUser()
+  const host = getRedisHost()
+  const port = getRedisPort()
+  const password = getRedisPassword()
+  const user = getRedisUser()
   return `redis://${user}:${password}@${host}:${port}`
 }
 
-export { getDiscordToken, getRedisConnectionString }
+export { getDiscordToken, getRedisConnectionString, getPort }

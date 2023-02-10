@@ -40,7 +40,6 @@ export const configureEvents = () => {
     if (!content.toLowerCase().startsWith(botPrefix.toLowerCase())) return
 
     const args = content.substring(botPrefix.length + 1).split(' ').filter(s => s)
-    console.log('args', args)
     const [command, firstArgument] = args
 
     // TODO: check if this cast is really necessary

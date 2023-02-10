@@ -59,3 +59,11 @@ export const play = async (youtubeUrl: string): Promise<PlayResult> => {
     return { error: true, message: 'unexpected error playing song', retries: 0 }
   }
 }
+
+export const getQueue = async () => {
+  const audioManager = getAudioManager()
+  // TODO: investigate if the cast is really necessary
+  const channel = await getBotVoiceChannel() as VoiceChannel
+  const songs = audioManager.queue(channel).map(song => ({ ...song, order: 0 }))
+  return songs
+}
