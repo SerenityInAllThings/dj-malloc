@@ -15,9 +15,8 @@ app.get('/queue', async (req, res) => {
 })
 
 export const start = () => new Promise<number>((resolve) => {
-  // TODO: get port from env
   const port = getPort()
-  app.listen(`0.0.0.0:${port}`, () => {
+  app.listen(port, '0.0.0.0', () => {
     console.log('Server started on port', port)
     resolve(port)
   })
