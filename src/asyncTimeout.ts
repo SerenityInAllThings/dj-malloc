@@ -1,1 +1,0 @@
-export const asyncTimeout = (ms: number) => new Promise<{timeout:boolean}>(resolve => setTimeout(() => resolve({ timeout: true }), ms))

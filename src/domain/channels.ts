@@ -1,5 +1,5 @@
 import { TextBasedChannel, VoiceBasedChannel, Client } from 'discord.js'
-import { getLogChannel, getVoiceChannel } from '../config'
+import { getLogChannel, getVoiceChannel } from './config'
 
 let botMessagesChannel: TextBasedChannel
 let logChannelId: string

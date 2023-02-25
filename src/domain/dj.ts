@@ -1,11 +1,10 @@
 import { createMusicTitle, MusicTitle } from "./musicTitle";
-import discord, { TextBasedChannel, VoiceBasedChannel, VoiceChannel } from 'discord.js'
+import discord, { TextBasedChannel, VoiceBasedChannel } from 'discord.js'
 import { joinVoiceChannel, VoiceConnection, AudioPlayer, createAudioPlayer }  from '@discordjs/voice'
 import { createDiscordClient } from "./discordClient";
-import { getBotPrefix } from "../config";
+import { getBotPrefix } from "./config";
 import { getBotVoiceChannel } from "./channels";
 import { getBotMessagesChannel } from './channels'
-
 
 export class DJ {
   private currentMusic: MusicTitle | null = null
@@ -20,6 +19,11 @@ export class DJ {
     private readonly discordClient: discord.Client
   ) {
     this.configureChatListener()
+
+    // setInterval(() => {
+    //   console.log('voiceStatus', this.currentVoiceConnection?.state.status)
+    //   console.log('audioPlayer', this.audioPlayer?.state.status) 
+    // }, 500)
   }
 
   private async configureChatListener() {
@@ -35,8 +39,6 @@ export class DJ {
 
       const currentVoiceChannel = await this.getCurrentVoiceConnection()
 
-      console.log('mentioned')
-
       const wordsAfterPrefix = content.substring(botPrefix.length + 1).split(' ').filter(s => s)
       const [command, ...args] = wordsAfterPrefix
 
@@ -49,8 +51,6 @@ export class DJ {
             message.react('🧠')
             const music = await createMusicTitle(youtubeUrl)
 
-            console.debug(`user voice channel: ${member?.voice.channel?.id}`)
-            console.debug(`bot voice channel: ${currentVoiceChannel?.id}`)
             if (member?.voice.channel?.id && member.voice.channel.id !== currentVoiceChannel?.id)
               await this.switchVoiceChannel(member.voice.channel.id)
 
@@ -63,7 +63,7 @@ export class DJ {
             message.react('▶️')
           } catch (err) {
             message.react('🦖')
-            channel.send(`Erro tocando ${args[0]}: ${err}`)
+            channel.send(`Erro tocando \`${args[0]}\`: ${err instanceof Error ? err.message : err}`)
           }
           break
         case 'vaza':
@@ -109,6 +109,9 @@ export class DJ {
     const guildId = this.guildId
     this.currentVoiceConnection = joinVoiceChannel({ channelId, guildId, adapterCreator })
     const player = createAudioPlayer()
+    player.on('error', (err) => {
+      console.log('Player error:', err.message)
+    })
     this.currentVoiceConnection.subscribe(player)
     this.audioPlayer = player
     this.currentVoiceChannel = channel
@@ -118,10 +121,10 @@ export class DJ {
     const audio = await music.getAudio()
     if (!this.audioPlayer) 
       throw new Error(`Should connect to voice channel before trying to get player`)
-    console.log(`Playing in ${this.guildId} - ${this.currentVoiceChannel?.id}`)
+    console.log(`Playing '${music.title}'`)
     this.audioPlayer.play(audio) 
     this.currentMusic = music
-  }
+  } 
 
   public async stop() {
     if (!this.audioPlayer) 

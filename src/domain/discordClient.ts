@@ -1,6 +1,6 @@
 import { ClientOptions, Client } from 'discord.js'
-import { asyncTimeout } from '../asyncTimeout'
-import { getBotPrefix } from '../config'
+import { asyncTimeout } from './asyncTimeout'
+import { getBotPrefix } from './config'
 import { getDiscordToken } from '../environmentVariables'
 import { getBotMessagesChannel } from './channels'
 

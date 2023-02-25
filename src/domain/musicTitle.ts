@@ -1,6 +1,6 @@
-import { getYoutubeVideoDetails, getYoutubeVideoId, isYoutubeUrlValid } from "../youtube"
+import { getYoutubeVideoDetails, getYoutubeVideoId, isYoutubeUrlValid, youtubePrefixes } from "./youtube"
 import { demuxProbe, createAudioResource }  from '@discordjs/voice'
-import ytdl from 'ytdl-core' 
+import ytdl, { downloadOptions } from 'ytdl-core' 
 import { Readable } from "stream"
 
 export class MusicTitle {
@@ -11,18 +11,28 @@ export class MusicTitle {
   ) {}
 
   public async getAudio() {
-    const stream = ytdl(this.url)
+    const streamOptions: downloadOptions = {
+      filter: "audioonly", 
+      quality: 'highestaudio', 
+      // Load 32mb of data to local buffer
+      highWaterMark: 1 << 25
+    }
+    const stream = ytdl(this.url, streamOptions)
     const audioResource = probeAndCreateResource(stream)
     return audioResource
   }
 }
 
-export const createMusicTitle = async (url: string): Promise<MusicTitle | undefined> => {
-  if (!url || typeof url !== 'string') return
-  if (!isYoutubeUrlValid(url)) return
+export const createMusicTitle = async (url: string) => {
+  if (!url || typeof url !== 'string') throw new Error('Missing video url')
+  if (!isYoutubeUrlValid(url)) {
+    const message =`Invalid youtube url: \`${url}\`` + 
+      `\nValid prefixes:\n${youtubePrefixes.map(p => '`' + p + '`').join(',\n')}`
+    throw new Error(message)
+  }
   const id = getYoutubeVideoId(url)
   const details = await getYoutubeVideoDetails(id)
-  if (!details) return
+  if (!details) throw new Error(`Could not get video details for id: ${id}`)
   return new MusicTitle(url, details.title, details.imageUrl)
 }
 
