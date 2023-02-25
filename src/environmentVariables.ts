@@ -24,6 +24,8 @@ const getRedisUser = () => getEnvironmentVariableOrThrow('REDISUSER')
 
 const getPort = () => getNumericEnvironmentVariableOrThrow('PORT')
 
+const getGoogleApiKey = () => getEnvironmentVariableOrThrow('GOOGLE_API_KEY')
+
 const getRedisConnectionString = () => {
   const host = getRedisHost()
   const port = getRedisPort()
@@ -32,4 +34,4 @@ const getRedisConnectionString = () => {
   return `redis://${user}:${password}@${host}:${port}`
 }
 
-export { getDiscordToken, getRedisConnectionString, getPort }
+export { getDiscordToken, getRedisConnectionString, getPort, getGoogleApiKey }
