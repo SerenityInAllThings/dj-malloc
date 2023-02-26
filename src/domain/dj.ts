@@ -34,7 +34,7 @@ export class DJ {
       const nextSong = this.nextSongs.shift()
       if (!nextSong) return
       this.play(nextSong)
-    }, 1500)
+    }, 5000)
   }
 
   reactToMessage = async (message: discord.Message) => {
