@@ -3,6 +3,7 @@ WORKDIR /source
 
 COPY . .
 RUN npm install
+RUN chmod +x ./prepare.sh
 RUN ./prepare.sh
 RUN npm run build
 
