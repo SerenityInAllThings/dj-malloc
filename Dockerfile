@@ -3,8 +3,8 @@ WORKDIR /source
 
 COPY . .
 RUN npm install
-RUN npm run build
 RUN ./prepare.sh
+RUN npm run build
 
 FROM node:18-alpine
 WORKDIR /app
