@@ -24,6 +24,7 @@ export class DJ {
     //   console.log('voiceStatus', this.currentVoiceConnection?.state.status)
     //   console.log('audioPlayer', this.audioPlayer?.state.status) 
     // }, 500)
+    this.playIfIdleAndHasNextSong()
   }
 
   private playIfIdleAndHasNextSong = async () => {
