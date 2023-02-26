@@ -36,8 +36,6 @@ export class DJ {
     const botPrefix = await getBotPrefix()
     if (!content.toLowerCase().startsWith(botPrefix.toLowerCase())) return
 
-    const currentVoiceChannel = await this.getCurrentVoiceConnection()
-
     const wordsAfterPrefix = content.substring(botPrefix.length + 1).split(' ').filter(s => s)
     const [command, ...args] = wordsAfterPrefix
 
@@ -50,7 +48,7 @@ export class DJ {
           message.react('🧠')
           const music = await createMusicTitle(youtubeUrl)
 
-          if (member?.voice.channel?.id && member.voice.channel.id !== currentVoiceChannel?.id)
+          if (member?.voice.channel?.id && member.voice.channel.id !== this.currentVoiceChannel?.id)
             await this.switchVoiceChannel(member.voice.channel.id)
 
           if (!music) {
@@ -66,6 +64,17 @@ export class DJ {
           channel.send(`Erro tocando \`${args[0]}\`: ${err instanceof Error ? err.message : err}`)
         }
         break
+      case 'pula':
+      case 'skip':
+      case 'proxima':
+      case 'next':
+        if (!this.currentMusic) {
+          message.react('😖')
+          break
+        }
+        message.react('⏭️')
+        this.stop(false)
+        break;
       case 'vaza':
       case 'stop':
       case 'para':
@@ -155,11 +164,15 @@ export class DJ {
     this.currentMusic = music
   } 
 
-  public stop = async () => {
+  public stop = async (disconnect: boolean = true) => {
     if (!this.audioPlayer) 
       throw new Error(`Should connect to voice channel before trying to get player`)
     this.audioPlayer.stop()
-    this.currentVoiceConnection?.disconnect()
+    if (disconnect) {
+      this.currentVoiceConnection?.disconnect()
+      this.currentVoiceConnection = null
+      this.currentVoiceChannel = null
+    }
     this.currentMusic = null
   }
 }
