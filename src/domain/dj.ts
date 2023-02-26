@@ -109,8 +109,13 @@ export class DJ {
           'https://www.youtube.com/watch?v=ycMg5Q6AtWI'
         ]
         const suffledPlaylist = shuffleArray(worktimePlaylist)
-        const firstSong = suffledPlaylist.shift()
-        await this.play(firstSong)
+        const firstUrl = suffledPlaylist.shift()
+        if (!firstUrl) {
+          message.react('😖')
+          return
+        }
+        const firstMusic = await createMusicTitle(firstUrl)
+        await this.play(firstMusic)
         for(const url of suffledPlaylist) {
           const music = await createMusicTitle(url)
           this.addSongToQueue(music)
