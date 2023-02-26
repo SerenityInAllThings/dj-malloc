@@ -25,17 +25,22 @@ export class DJ {
     //   console.log('voiceStatus', this.currentVoiceConnection?.state.status)
     //   console.log('audioPlayer', this.audioPlayer?.state.status) 
     // }, 500)
-    this.playIfIdleAndHasNextSong()
+    // this.playIfIdleAndHasNextSong()
   }
 
-  private playIfIdleAndHasNextSong = async () => {
-    setInterval(() => {
-      if (this.audioPlayer?.state.status !== 'idle') return
-      const nextSong = this.nextSongs.shift()
-      if (!nextSong) return
-      this.play(nextSong)
-    }, 5000)
-  }
+  // private playIfIdleAndHasNextSong = () => {
+  //   setInterval(async () => {
+  //     if (this.audioPlayer?.state.status !== 'idle') return
+  //     const nextSong = this.nextSongs.shift()
+  //     if (!nextSong) return
+
+  //     const textChannel = await this.getTextChannel()
+  //     if (this.currentMusic)
+  //     textChannel.send(`Estava inativo, mas agora toco \`${nextSong.title}\``)
+
+  //     this.play(nextSong)
+  //   }, 5000)
+  // }
 
   reactToMessage = async (message: discord.Message) => {
     const { author, channel, content, member } = message
