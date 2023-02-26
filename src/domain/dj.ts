@@ -187,6 +187,8 @@ export class DJ {
         }
         else if (oldStatus === 'buffering') {
           console.log(`Error playing '${justPlayed?.title}'`)
+          const textChannel = await this.getTextChannel()
+          textChannel.send(`Erro tocando \`${justPlayed?.title}\``)
           // TODO: do something with errored songs. 
           // Maybe send to a list to be analysed later
         }
