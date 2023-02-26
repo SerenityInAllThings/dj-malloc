@@ -13,6 +13,7 @@ Discord bot for playing music in discord servers.
 - [ ] Allow saving and playing playlists
 - [ ] provide REST API for changing music
 - [ ] provide websocket interface to build rich web app
+- [ ] use strategy pattern for different bot commands
 
 ## References
 

@@ -18,74 +18,71 @@ export class DJ {
   constructor(
     private readonly discordClient: discord.Client
   ) {
-    this.configureChatListener()
-
+    // For debugging
     // setInterval(() => {
     //   console.log('voiceStatus', this.currentVoiceConnection?.state.status)
     //   console.log('audioPlayer', this.audioPlayer?.state.status) 
     // }, 500)
   }
 
-  private async configureChatListener() {
-    this.discordClient.on('messageCreate', async (message) => {
-      const { author, channel, content, member } = message
-      if (message.guild?.id && message.guild.id !== this.guildId) 
-        this.guildId = message.guild.id
+  reactToMessage = async (message: discord.Message) => {
+    const { author, channel, content, member } = message
+    if (message.guild?.id && message.guild.id !== this.guildId) 
+      this.guildId = message.guild.id
 
-      if (author.bot || channel.type === discord.ChannelType.DM) return
+    if (author.bot || channel.type === discord.ChannelType.DM) return
 
-      const botPrefix = await getBotPrefix()
-      if (!content.toLowerCase().startsWith(botPrefix.toLowerCase())) return
+    const botPrefix = await getBotPrefix()
+    if (!content.toLowerCase().startsWith(botPrefix.toLowerCase())) return
 
-      const currentVoiceChannel = await this.getCurrentVoiceConnection()
+    const currentVoiceChannel = await this.getCurrentVoiceConnection()
 
-      const wordsAfterPrefix = content.substring(botPrefix.length + 1).split(' ').filter(s => s)
-      const [command, ...args] = wordsAfterPrefix
+    const wordsAfterPrefix = content.substring(botPrefix.length + 1).split(' ').filter(s => s)
+    const [command, ...args] = wordsAfterPrefix
 
-      switch (command.toLowerCase().trim()) {
-        case 'toca':
-        case 'play':
-        case 'p':
-          try {
-            const youtubeUrl = args[0].trim()
-            message.react('🧠')
-            const music = await createMusicTitle(youtubeUrl)
+    switch (command.toLowerCase().trim()) {
+      case 'toca':
+      case 'play':
+      case 'p':
+        try {
+          const youtubeUrl = args[0].trim()
+          message.react('🧠')
+          const music = await createMusicTitle(youtubeUrl)
 
-            if (member?.voice.channel?.id && member.voice.channel.id !== currentVoiceChannel?.id)
-              await this.switchVoiceChannel(member.voice.channel.id)
+          if (member?.voice.channel?.id && member.voice.channel.id !== currentVoiceChannel?.id)
+            await this.switchVoiceChannel(member.voice.channel.id)
 
-            if (!music) {
-              message.react('😖')
-              break
-            }
-            message.react('⬇️')
-            await this.play(music)
-            message.react('▶️')
-          } catch (err) {
-            message.react('🦖')
-            channel.send(`Erro tocando \`${args[0]}\`: ${err instanceof Error ? err.message : err}`)
+          if (!music) {
+            message.react('😖')
+            break
           }
-          break
-        case 'vaza':
-        case 'stop':
-        case 'para':
-          this.stop()
-          message.react('⏹️')
-          break
-        default:
-          message.react('❓')
-          channel.send('Invalid command')
-      }
-    })
+          message.react('⬇️')
+          await this.play(music)
+          message.react('▶️')
+        } catch (err) {
+          message.react('🦖')
+          channel.send(`Erro tocando \`${args[0]}\`: ${err instanceof Error ? err.message : err}`)
+        }
+        break
+      case 'vaza':
+      case 'stop':
+      case 'para':
+        this.stop()
+        message.react('⏹️')
+        break
+      default:
+        message.react('❓')
+        channel.send('Invalid command')
+    }
   }
 
-  private async getTextChannel() {
+  private getTextChannel = async () => {
     if (!this.textChannel) 
       this.textChannel = await getBotMessagesChannel(this.discordClient)
     return this.textChannel
   }
 
-  private async getCurrentVoiceConnection(connect: boolean = true) {
+  private getCurrentVoiceConnection = async (connect: boolean = true) => {
     const notConnected = !this.currentVoiceChannel 
       || this.currentVoiceConnection?.state.status === 'disconnected'
       || this.currentVoiceConnection?.state.status === 'destroyed'
@@ -97,7 +94,7 @@ export class DJ {
     return this.currentVoiceChannel
   }
 
-  private async switchVoiceChannel(channelId: string) {
+  private switchVoiceChannel = async (channelId: string) => {
     console.log(`Switching to channel ${channelId}`)
     const channel = await this.discordClient.channels.fetch(channelId)
     if (!channel) throw new Error(`Missing channel ${channelId}`)
@@ -117,7 +114,7 @@ export class DJ {
     this.currentVoiceChannel = channel
   }
 
-  public async play(music: MusicTitle) {
+  public play = async (music: MusicTitle) => {
     const audio = await music.getAudio()
     if (!this.audioPlayer) 
       throw new Error(`Should connect to voice channel before trying to get player`)
@@ -126,7 +123,7 @@ export class DJ {
     this.currentMusic = music
   } 
 
-  public async stop() {
+  public stop = async () => {
     if (!this.audioPlayer) 
       throw new Error(`Should connect to voice channel before trying to get player`)
     this.audioPlayer.stop()
@@ -137,6 +134,8 @@ export class DJ {
 
 export const createDJ = async () => {
   const discordClient = await createDiscordClient()
-  return new DJ(discordClient)
+  const dj = new DJ(discordClient)
+  discordClient.on('messageCreate', dj.reactToMessage)
+  return dj
 }
 
