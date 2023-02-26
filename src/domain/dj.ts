@@ -26,6 +26,15 @@ export class DJ {
     // }, 500)
   }
 
+  private playIfIdleAndHasNextSong = async () => {
+    setInterval(() => {
+      if (this.audioPlayer?.state.status !== 'idle') return
+      const nextSong = this.nextSongs.shift()
+      if (!nextSong) return
+      this.play(nextSong)
+    }, 500)
+  }
+
   reactToMessage = async (message: discord.Message) => {
     const { author, channel, content, member } = message
     if (message.guild?.id && message.guild.id !== this.guildId) 
