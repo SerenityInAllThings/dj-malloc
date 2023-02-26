@@ -5,7 +5,8 @@ Discord bot for playing music in discord servers.
 ## To Dos:
 
 - [ ] Create image for discord bot and app
-- [ ] Allow queueing songs
+- [X] Allow queueing songs
+- [X] Allow skipping songs
 - [ ] Allow playing songs instantly
 - [ ] Add precommit to increase package.json version
   - this would allow the bot to inform it's current version
@@ -14,6 +15,7 @@ Discord bot for playing music in discord servers.
 - [ ] provide REST API for changing music
 - [ ] provide websocket interface to build rich web app
 - [ ] use strategy pattern for different bot commands
+- [ ] Add startup message with available commands
 - [ ] Store errored songs
 - [ ] Store played songs
 
