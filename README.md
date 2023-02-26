@@ -7,6 +7,8 @@ Discord bot for playing music in discord servers.
 - [ ] Create image for discord bot and app
 - [X] Allow queueing songs
 - [X] Allow skipping songs
+- [X] Add worktime playlist
+  - [ ] Allow editing playlist
 - [ ] Allow playing playlists
 - [ ] Allow playing songs in loop
 - [ ] Allow playing songs instantly

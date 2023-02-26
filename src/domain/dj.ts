@@ -81,6 +81,31 @@ export class DJ {
         this.stop()
         message.react('⏹️')
         break
+      case 'worktime':
+        message.react('👷')
+        channel.send('Hora do trabalho, powrra')
+
+        if (member?.voice.channel?.id && member.voice.channel.id !== this.currentVoiceChannel?.id)
+            await this.switchVoiceChannel(member.voice.channel.id)
+
+        const worktimePlaylist = [
+          'https://www.youtube.com/watch?v=ZgFoMWjng30',
+          'https://www.youtube.com/watch?v=RvaywQkxlrQ',
+          'https://www.youtube.com/watch?v=pQuJJy6dXog',
+          'https://www.youtube.com/watch?v=4r1sKSRxsnQ',
+          'https://www.youtube.com/watch?v=d6Aj2J8bMLI',
+          'https://www.youtube.com/watch?v=znBlH-kyR1k',
+          'https://www.youtube.com/watch?v=ycMg5Q6AtWI'
+        ]
+        for(const url of worktimePlaylist) {
+          const music = await createMusicTitle(url)
+          this.addSongToQueue(music)
+        }
+        const response = 'Coloquei essas, patrão:\n' + worktimePlaylist
+          .map((m, i) => i + 1 + ') ' + m)
+          .join('\n')
+        channel.send(response)
+        break;
       default:
         message.react('❓')
         channel.send('Invalid command')
