@@ -8,6 +8,7 @@ import { getBotMessagesChannel } from './channels'
 
 export class DJ {
   private currentMusic: MusicTitle | null = null
+  private nextSongs: MusicTitle[] = []
   private currentVoiceChannel: VoiceBasedChannel | null = null
   private currentVoiceConnection: VoiceConnection | null = null
   private audioPlayer: AudioPlayer | null = null
@@ -57,7 +58,8 @@ export class DJ {
             break
           }
           message.react('⬇️')
-          await this.play(music)
+          if (!this.currentMusic) await this.play(music)
+          else this.addSongToQueue(music)
           message.react('▶️')
         } catch (err) {
           message.react('🦖')
@@ -74,6 +76,11 @@ export class DJ {
         message.react('❓')
         channel.send('Invalid command')
     }
+  }
+
+  addSongToQueue = async (music: MusicTitle) => {
+    console.log(`Adding '${music.title}' to queue`)
+    this.nextSongs.push(music)
   }
 
   private getTextChannel = async () => {
@@ -108,6 +115,31 @@ export class DJ {
     const player = createAudioPlayer()
     player.on('error', (err) => {
       console.log('Player error:', err.message)
+    })
+    player.on('stateChange', async ({ status: oldStatus }, { status: newStatus }) => {
+      // Reference: https://discordjs.guide/voice/audio-player.html#life-cycle
+      if (newStatus === 'idle') {
+        const justPlayed = this.currentMusic
+        if (this.currentMusic) {
+          console.log(`Finished playing '${this.currentMusic.title}'`)
+          this.currentMusic = null
+        }
+        if (oldStatus === 'playing') {
+          // TODO: Send to played list for stats
+        }
+        else if (oldStatus === 'buffering') {
+          console.log(`Error playing '${justPlayed?.title}'`)
+          // TODO: do something with errored songs. 
+          // Maybe send to a list to be analysed later
+        }
+        const nextSong = this.nextSongs.shift()
+        if (!nextSong) {
+          console.log('No more songs to play')
+          this.stop()
+          return
+        }
+        await this.play(nextSong)
+      }
     })
     this.currentVoiceConnection.subscribe(player)
     this.audioPlayer = player
