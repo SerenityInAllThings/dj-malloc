@@ -20,6 +20,7 @@ Discord bot for playing music in discord servers.
 - [ ] Add startup message with available commands
 - [ ] Store errored songs
 - [ ] Store played songs
+- [ ] Warn when it is not posible to connect to a voice channel
 
 ## References
 
