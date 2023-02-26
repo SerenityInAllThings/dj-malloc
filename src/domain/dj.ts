@@ -5,6 +5,7 @@ import { createDiscordClient } from "./discordClient";
 import { getBotPrefix } from "./config";
 import { getBotVoiceChannel } from "./channels";
 import { getBotMessagesChannel } from './channels'
+import { shuffleArray } from "./shuffleArray";
 
 export class DJ {
   private currentMusic: MusicTitle | null = null
@@ -33,7 +34,7 @@ export class DJ {
       const nextSong = this.nextSongs.shift()
       if (!nextSong) return
       this.play(nextSong)
-    }, 500)
+    }, 1500)
   }
 
   reactToMessage = async (message: discord.Message) => {
@@ -107,11 +108,14 @@ export class DJ {
           'https://www.youtube.com/watch?v=znBlH-kyR1k',
           'https://www.youtube.com/watch?v=ycMg5Q6AtWI'
         ]
-        for(const url of worktimePlaylist) {
+        const suffledPlaylist = shuffleArray(worktimePlaylist)
+        const firstSong = suffledPlaylist.shift()
+        await this.play(firstSong)
+        for(const url of suffledPlaylist) {
           const music = await createMusicTitle(url)
           this.addSongToQueue(music)
         }
-        const response = 'Coloquei essas, patrão:\n' + worktimePlaylist
+        const response = 'Coloquei essas, patrão:\n' + suffledPlaylist
           .map((m, i) => i + 1 + ') ' + m)
           .join('\n')
         channel.send(response)
