@@ -4,6 +4,7 @@ WORKDIR /source
 COPY . .
 RUN npm install
 RUN npm run build
+RUN npm install ytdl-core@4.11.2
 
 FROM node:18-alpine
 WORKDIR /app
