@@ -250,6 +250,7 @@ export class DJ {
       this.currentVoiceChannel = null
     }
     this.currentMusic = null
+    this.nextSongs = []
   }
 }
 
