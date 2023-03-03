@@ -11,7 +11,66 @@ export class DJ {
   private currentMusic: MusicTitle | null = null
   private nextSongs: MusicTitle[] = []
   private currentVoiceChannel: VoiceBasedChannel | null = null
-  private currentVoiceConnection: VoiceConnection | null = null
+  private _currentVoiceConnection: VoiceConnection | null = null
+  private get currentVoiceConnection(){ return this._currentVoiceConnection }
+  private set currentVoiceConnection(connection: VoiceConnection | null) {
+    if (this._currentVoiceConnection) {
+      this._currentVoiceConnection.disconnect()
+      this._currentVoiceConnection.destroy()
+    }
+    connection?.on('stateChange', (oldState, newState) => {
+      console.log('Voice connection state changed', oldState.status, newState.status)
+
+      // TODO: due to https://github.com/discordjs/discord.js/issues/9185
+      const oldNetworking = Reflect.get(oldState, 'networking');
+      const newNetworking = Reflect.get(newState, 'networking');
+      const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
+        const newUdp = Reflect.get(newNetworkState, 'udp');
+        clearInterval(newUdp?.keepAliveInterval);
+      }
+      oldNetworking?.off('stateChange', networkStateChangeHandler);
+      newNetworking?.on('stateChange', networkStateChangeHandler);
+    })
+    connection?.on('error', error => {
+      console.error('Voice connection error', error)
+    })
+
+    const player = createAudioPlayer()
+    player.on('error', (err) => {
+      console.error('Player error:' + err.message, err)
+    })
+    player.on('stateChange', async ({ status: oldStatus }, { status: newStatus }) => {
+      console.log('player state change from', oldStatus, 'to', newStatus)
+      // Reference: https://discordjs.guide/voice/audio-player.html#life-cycle
+      if (newStatus === 'idle') {
+        const justPlayed = this.currentMusic
+        if (this.currentMusic) {
+          console.log(`Finished playing '${this.currentMusic.title}'`)
+          this.currentMusic = null
+        }
+        if (oldStatus === 'playing') {
+          // TODO: Send to played list for stats
+        }
+        else if (oldStatus === 'buffering') {
+          console.log(`Error playing '${justPlayed?.title}'`)
+          const textChannel = await this.getTextChannel()
+          textChannel.send(`Erro tocando \`${justPlayed?.title}\``)
+          // TODO: do something with errored songs. 
+          // Maybe send to a list to be analysed later
+        }
+        const nextSong = this.nextSongs.shift()
+        if (!nextSong) {
+          console.log('No more songs to play')
+          this.stop()
+          return
+        }
+        await this.play(nextSong)
+      }
+    })
+    connection?.subscribe(player)
+    this.audioPlayer = player
+    this._currentVoiceConnection = connection
+  }
   private audioPlayer: AudioPlayer | null = null
   private textChannel: TextBasedChannel | null = null
   // TODO: get guildId from config
@@ -170,39 +229,6 @@ export class DJ {
       throw new Error(`Missing adapterCreator for guildId ${this.guildId}`)
     const guildId = this.guildId
     this.currentVoiceConnection = joinVoiceChannel({ channelId, guildId, adapterCreator })
-    const player = createAudioPlayer()
-    player.on('error', (err) => {
-      console.log('Player error:', err.message)
-    })
-    player.on('stateChange', async ({ status: oldStatus }, { status: newStatus }) => {
-      // Reference: https://discordjs.guide/voice/audio-player.html#life-cycle
-      if (newStatus === 'idle') {
-        const justPlayed = this.currentMusic
-        if (this.currentMusic) {
-          console.log(`Finished playing '${this.currentMusic.title}'`)
-          this.currentMusic = null
-        }
-        if (oldStatus === 'playing') {
-          // TODO: Send to played list for stats
-        }
-        else if (oldStatus === 'buffering') {
-          console.log(`Error playing '${justPlayed?.title}'`)
-          const textChannel = await this.getTextChannel()
-          textChannel.send(`Erro tocando \`${justPlayed?.title}\``)
-          // TODO: do something with errored songs. 
-          // Maybe send to a list to be analysed later
-        }
-        const nextSong = this.nextSongs.shift()
-        if (!nextSong) {
-          console.log('No more songs to play')
-          this.stop()
-          return
-        }
-        await this.play(nextSong)
-      }
-    })
-    this.currentVoiceConnection.subscribe(player)
-    this.audioPlayer = player
     this.currentVoiceChannel = channel
   }
 
@@ -220,7 +246,6 @@ export class DJ {
       throw new Error(`Should connect to voice channel before trying to get player`)
     this.audioPlayer.stop()
     if (disconnect) {
-      this.currentVoiceConnection?.disconnect()
       this.currentVoiceConnection = null
       this.currentVoiceChannel = null
     }
