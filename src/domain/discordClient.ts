@@ -1,7 +1,7 @@
 import { ClientOptions, Client } from 'discord.js'
 import { asyncTimeout } from './asyncTimeout'
 import { getBotPrefix } from './config'
-import { getDiscordToken } from '../environmentVariables'
+import { getCurrentVersion, getDiscordToken } from '../environmentVariables'
 import { getBotMessagesChannel } from './channels'
 
 const token = getDiscordToken()
@@ -33,7 +33,7 @@ const configureLogEvents = async (client: Client) => {
   client.once('ready', async () => {
     const botPrefix = await getBotPrefix()
     const channel = await getBotMessagesChannel(client)
-    const message = `Bot ready!! Using prefix \`${botPrefix}\``
+    const message = `Bot ready!!\nUsing prefix \`${botPrefix}\`\nVersion \´${getCurrentVersion()}\´`
     console.log(message)
     await channel.send(message)
   })

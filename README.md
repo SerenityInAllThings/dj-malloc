@@ -12,7 +12,7 @@ Discord bot for playing music in discord servers.
 - [ ] Allow playing playlists
 - [ ] Allow playing songs in loop
 - [ ] Allow playing songs instantly
-- [ ] Add precommit to increase package.json version
+- [X] Add precommit to increase package.json version
   - this would allow the bot to inform it's current version
   - Maybe informing the version on startup would be helpful
 - [ ] Allow saving and playing playlists
