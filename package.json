@@ -1,6 +1,6 @@
 {
   "name": "dj-malloc",
-  "version": "1.0.57",
+  "version": "1.0.58",
   "description": "Discord bot for music",
   "main": "index.js",
   "scripts": {
@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/SerenityInAllThings/dj-malloc#readme",
   "dependencies": {
+    "@discordjs/voice": "^0.14.0",
     "@redis/client": "^1.4.2",
     "discord.js": "^14.7.1",
     "express": "^4.18.2",
