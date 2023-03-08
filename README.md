@@ -24,6 +24,7 @@ Discord bot for playing music in discord servers.
 - [ ] Store played songs
 - [ ] Warn when it is not posible to connect to a voice channel
 - [ ] Add tree shaking to decrease bundle size (current docker image is about ~300mb)
+- [ ] Create local development script
 
 ## References
 
