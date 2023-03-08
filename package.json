@@ -1,6 +1,6 @@
 {
   "name": "dj-malloc",
-  "version": "1.0.58",
+  "version": "1.0.59",
   "description": "Discord bot for music",
   "main": "index.js",
   "scripts": {
