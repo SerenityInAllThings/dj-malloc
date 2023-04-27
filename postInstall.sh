@@ -1,2 +1,2 @@
 # This needs to be here to I can run the app on railway
-npm install ytdl-core@4.11.4 --no-save
+npm install git+ssh://git@github.com:khlevon/node-ytdl-core.git#v4.11.4-patch.1 --no-save
