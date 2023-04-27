@@ -2,6 +2,10 @@ FROM node:18-alpine as build
 WORKDIR /source
 
 COPY . .
+
+RUN apk update
+RUN apk add git
+
 RUN chmod +x ./postInstall.sh
 RUN npm install
 RUN npm run build
