@@ -226,7 +226,7 @@ export class DJ {
               const music = await createMusicTitle(url)
               this.addSongToQueue(music)
             }
-            const bebopResponse = 'Coloquei essas, patrão:\n' + [firstUrl, ...bebopPlaylist]
+            const bebopResponse = 'Coloquei essas, patrão:\n' + [firstBebop, ...bebopPlaylist]
               .map((m, i) => i + 1 + ') ' + m)
               .join('\n')
             channel.send(bebopResponse)
