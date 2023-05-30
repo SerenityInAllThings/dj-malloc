@@ -170,7 +170,8 @@ export class DJ {
           'https://www.youtube.com/watch?v=4r1sKSRxsnQ',
           'https://www.youtube.com/watch?v=d6Aj2J8bMLI',
           'https://www.youtube.com/watch?v=znBlH-kyR1k',
-          'https://www.youtube.com/watch?v=ycMg5Q6AtWI'
+          'https://www.youtube.com/watch?v=ycMg5Q6AtWI',
+          'https://www.youtube.com/watch?v=nyNzGPWbYXg'
         ]
         const suffledPlaylist = shuffleArray(worktimePlaylist)
         const firstUrl = suffledPlaylist.shift()
