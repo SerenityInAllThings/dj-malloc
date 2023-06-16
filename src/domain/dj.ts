@@ -197,41 +197,44 @@ export class DJ {
 
         if (member?.voice.channel?.id && member.voice.channel.id !== this.currentVoiceChannel?.id)
             await this.switchVoiceChannel(member.voice.channel.id)
-          const bebopPlaylist = [
-            'https://www.youtube.com/watch?v=EuAzPR0ACVw',
-            'https://www.youtube.com/watch?v=n2rVnRwW0h8',
-            'https://www.youtube.com/watch?v=l8wWa3O9cUo',
-            'https://www.youtube.com/watch?v=MduJjbcLSqE',
-            'https://www.youtube.com/watch?v=EuAzPR0ACVw',
-            'https://www.youtube.com/watch?v=2RgKVk1M9M0',
-            'https://www.youtube.com/watch?v=KFyXM5E7kyg',
-            'https://www.youtube.com/watch?v=WKnVaDwUg5s',
-            'https://www.youtube.com/watch?v=81m8_5mccgA',
-            'https://www.youtube.com/watch?v=wN7x4DlfuCY',
-            'https://www.youtube.com/watch?v=MUTMw7rEsDk',
-            'https://www.youtube.com/watch?v=j8qtTojcGxk',
-            'https://www.youtube.com/watch?v=h6N1_GJAyFw',
-            'https://www.youtube.com/watch?v=SUNvJ5Plo-0',
-            'https://www.youtube.com/watch?v=Vcrb6365GsQ',
-            'https://www.youtube.com/watch?v=YncNm0WQY2I',
-            'https://www.youtube.com/watch?v=KWooB4tpQ9I'
-          ]
-            const firstBebop = bebopPlaylist.shift()
-            if (!firstBebop) {
-              message.react('😖')
-              return
-            }
-            const firstBebopMusic = await createMusicTitle(firstBebop)
-            await this.play(firstBebopMusic)
-            for(const url of bebopPlaylist) {
-              const music = await createMusicTitle(url)
-              this.addSongToQueue(music)
-            }
-            const bebopResponse = 'Coloquei essas, patrão:\n' + [firstBebop, ...bebopPlaylist]
-              .map((m, i) => i + 1 + ') ' + m)
-              .join('\n')
-            channel.send(bebopResponse)
-            break;
+        const bebopPlaylist = [
+          'https://www.youtube.com/watch?v=EuAzPR0ACVw',
+          'https://www.youtube.com/watch?v=n2rVnRwW0h8',
+          'https://www.youtube.com/watch?v=l8wWa3O9cUo',
+          'https://www.youtube.com/watch?v=MduJjbcLSqE',
+          'https://www.youtube.com/watch?v=EuAzPR0ACVw',
+          'https://www.youtube.com/watch?v=2RgKVk1M9M0',
+          'https://www.youtube.com/watch?v=KFyXM5E7kyg',
+          'https://www.youtube.com/watch?v=WKnVaDwUg5s',
+          'https://www.youtube.com/watch?v=81m8_5mccgA',
+          'https://www.youtube.com/watch?v=wN7x4DlfuCY',
+          'https://www.youtube.com/watch?v=MUTMw7rEsDk',
+          'https://www.youtube.com/watch?v=j8qtTojcGxk',
+          'https://www.youtube.com/watch?v=h6N1_GJAyFw',
+          'https://www.youtube.com/watch?v=SUNvJ5Plo-0',
+          'https://www.youtube.com/watch?v=Vcrb6365GsQ',
+          'https://www.youtube.com/watch?v=YncNm0WQY2I',
+          'https://www.youtube.com/watch?v=KWooB4tpQ9I'
+        ]
+        const firstBebop = bebopPlaylist.shift()
+        if (!firstBebop) {
+          message.react('😖')
+          return
+        }
+        const firstBebopMusic = await createMusicTitle(firstBebop)
+        await this.play(firstBebopMusic)
+        for(const url of bebopPlaylist) {
+          const music = await createMusicTitle(url)
+          this.addSongToQueue(music)
+        }
+        const bebopResponse = 'Coloquei essas, patrão:\n' + [firstBebop, ...bebopPlaylist]
+          .map((m, i) => i + 1 + ') ' + m)
+          .join('\n')
+        channel.send(bebopResponse)
+        break
+      case 'pause':
+        this.audioPlayer?.pause()
+        break
       default:
         message.react('❓')
         channel.send('Invalid command')
